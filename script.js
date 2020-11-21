@@ -20,35 +20,53 @@ function showSuccess(input) {
 //cehck email
 function validateEmail(input) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(input).toLowerCase());
+    if (re.test(input.value)) {
+        showSuccess(input);
+    } else {
+        showError(input, 'Email id not valid');
+    }
+}
+
+
+checkRequired = (inputArr) => {
+    inputArr.forEach(element => {
+        if (element.value.trim() === "") {
+            return showError(element, `add your ${getFieldName(element)}`);
+
+        } else {
+            showSuccess(element);
+        }
+    });
+}
+
+function checkLength(element, min, max) {
+    if (element.value.length < min) {
+        showError(element, `${getFieldName(element)} must be at least ${min}`);
+    } else if (element.value.length > max) {
+        showError(element, `${getFieldName(element)} must be less than ${max}`);
+
+    } else {
+        showSuccess(element);
+    }
+}
+function checkPassword(pas1, pas2) {
+    if (pas1.value !== pas2.value) {
+        showError(pas2, 'passwords do not match');
+    }
+}
+const getFieldName = function (element) {
+    return (element.id.charAt(0).toUpperCase() + element.id.slice(1));
+
 }
 
 
 form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (username.value === '') {
-        showError(username, 'Username is required')
-    } else {
-        showSuccess(username)
-    }
 
-    if (email.value === '') {
-        showError(email, 'email is required');
-    } else if (!validateEmail(email.value)) {
-        showError(email, 'email is not valid');
-    } else {
-        showSuccess(email)
-    }
 
-    if (password.value === '') {
-        showError(password, 'password is required')
-    } else {
-        showSuccess(password)
-    }
-
-    if (pass2.value === '' || pass2.value !== password.value) {
-        showError(pass2, 'password doesnt match')
-    } else {
-        showSuccess(pass2)
-    }
+    checkRequired([username, email, password, pass2]);
+    checkLength(username, 3, 20);
+    checkLength(password, 6, 30);
+    validateEmail(email);
+    checkPassword(password, pass2);
 });
